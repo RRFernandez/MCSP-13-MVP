@@ -1,6 +1,6 @@
 import express from "express";
-import pg from "pg";
 import fs from "fs/promises";
+import pg from "pg";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -13,15 +13,29 @@ app.use(express.json());
 
 app.use(express.static('static'));
 
-const pool = new pg.Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
+const dbConfig = {
+    connectionString: process.env.DATABASE_URL
+};
+
+if (process.env.NODE_ENV === "production") {
+    dbConfig.ss = {
         rejectUnauthorized: false
-    }
+    };
+}
+
+const pool = new pg.Pool(dbConfig);
+
+app.get("/todo", (res, req, next) => {
+    pool.query('SELECT * FROM lists').then((data) => {
+            console.log(data);
+            res.send(data.rows);
+        })
+        .catch(next)
 });
 
-app.get('/todo', (res, req, next) => {
-    pool.query('SELECT * FROM todo').then((data) => {
+app.get("/todo/tasks", (res, req, next) => {
+    pool.query('SELECT * FROM tasks').then((data) => {
+            console.log(data);
             res.send(data.rows);
         })
         .catch(next)
