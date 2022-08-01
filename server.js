@@ -20,7 +20,7 @@ const pool = new pg.Pool({
     }
 });
 
-app.get('/todo', (res, req, next) => {
+app.get('todo', (res, req, next) => {
     pool.query('SELECT * FROM todo').then((data) => {
             res.send(data.rows);
         })
