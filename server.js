@@ -25,7 +25,7 @@ if (process.env.NODE_ENV === "production") {
 
 const pool = new pg.Pool(dbConfig);
 
-app.get("/todo", (res, req, next) => {
+app.get("/todo", (req, res, next) => {
     pool.query('SELECT * FROM lists').then((data) => {
             console.log(data);
             res.send(data.rows);
@@ -33,7 +33,7 @@ app.get("/todo", (res, req, next) => {
         .catch(next)
 });
 
-app.get("/todo/tasks", (res, req, next) => {
+app.get("/todo/tasks", (req, res, next) => {
     pool.query('SELECT * FROM tasks').then((data) => {
             console.log(data);
             res.send(data.rows);
