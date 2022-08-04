@@ -64,7 +64,7 @@ const getTodo = (event) => {
         .then(res => res.json())
         .then(data => {
             console.log(data)
-            createTodo(data)
+            createTodo($.parseJSON(data))
         })
 
 }
