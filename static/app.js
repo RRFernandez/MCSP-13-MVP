@@ -24,6 +24,21 @@ const createTodo = (data) => {
     }
 }
 
+const setTodo = (data) => {
+    const $todoDiv = $('<div></div>').addClass("todo-div");
+    const $newTask = $('<li></li>').addClass("task");
+    $todoDiv.append($newTask);
+    const $completeBtn = $('<button></button>').html('<i class="fas fa-check"></i>');
+    $completeBtn.addClass("complete-btn")
+    $todoDiv.append($completeBtn);
+    const $trashBtn = $('<button></button>').html('<i class="fas fa-trash"></i>');
+    $trashBtn.addClass("trash-btn")
+    $todoDiv.append($trashBtn);
+    $todoDiv.append(JSON.stringify(data.name))
+    $todoList.append($todoDiv);
+    $todoInput.val("");
+}
+
 const addTodo = (event) => {
     event.preventDefault();
     const newTodo = {
@@ -39,7 +54,7 @@ const addTodo = (event) => {
         })
         .then(res => res.json())
         .then(data => {
-            createTodo(data)
+            setTodo(data)
         });
 };
 
@@ -54,23 +69,25 @@ const getTodo = (event) => {
 
 }
 
+function deleteIt() {
+    fetch("/todo", {
+            method: 'DELETE'
+        })
+        .then(() => {
+            console.log('Deleted')
+        })
+}
 
 const deleteCheck = (e) => {
     const item = e.target;
-    const deleteItem =
-        fetch("/todo", {
-            method: 'DELETE',
-            headers: {
-                "Content-type": "application/json"
-            }
-        })
+
 
     if (item.classList[0] === 'trash-btn') {
         const todo = item.parentElement;
         todo.classList.add('fall');
         todo.addEventListener('transitioned', () => {
             todo.remove();
-            deleteItem(todo);
+            deleteIt();
         })
 
     }
@@ -82,28 +99,28 @@ const deleteCheck = (e) => {
 }
 
 function filterTodo(e) {
-    const todos = e.childElement;
-    for (let e = 0; e < todos.length; i++) {
+    const todos = $todoList.children();
+    todos.each((todo) => {
         switch (e.target.value) {
             case "all":
-                todos.style.display = "flex";
+                todo.show = "flex";
                 break;
             case "completed":
-                if (todos.classList.contains("completed")) {
-                    todos.style.display = "flex";
+                if (todo.hasClass("completed")) {
+                    todo.show = "flex";
                 } else {
-                    todos.style.display = "none";
+                    todo.show = "none";
                 }
                 break;
             case "uncompleted":
-                if (!todos.classList.contains('completed')) {
-                    todos.style.display = "flex";
+                if (!todo.hasClass('completed')) {
+                    todo.show = "flex";
                 } else {
-                    todos.style.display = "none";
+                    todo.show = "none";
                 }
                 break;
         }
-    };
+    });
 }
 
 //event listeners
