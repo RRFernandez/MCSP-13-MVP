@@ -7,14 +7,13 @@ dotenv.config();
 
 const app = express();
 
-const { PORT, DATABSE_URL, NODE_ENV } = process.env;
+const { PORT, DATABASE_URL, NODE_ENV } = process.env;
 
 app.use(express.json());
 
 app.use(express.static('static'));
 
 const pool = new pg.Pool({
-    // database: 'foods',
     connectionString: process.env.DATABASE_URL,
     ssl: {
         rejectUnauthorized: false
