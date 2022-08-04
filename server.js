@@ -15,17 +15,12 @@ app.use(express.static('static'));
 
 app.use(express.json());
 
-const dbConfig = {
-    connectionString: process.env.DATABASE_URL
-};
-
-if (process.env.NODE_ENV === "production") {
-    dbConfig.ssl = {
+const pool = new pg.Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
         rejectUnauthorized: false
-    };
-}
-
-const pool = new pg.Pool(dbConfig);
+    }
+});
 
 const unknownHTTP = (req, res, next) => {
     res.sendStatus(404);
