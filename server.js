@@ -7,19 +7,28 @@ dotenv.config();
 
 const app = express();
 
-const { PORT, DATABASE_URL, NODE_ENV } = process.env;
+const PORT = process.env.PORT;
 
 app.use(express.json());
 
 app.use(express.static('static'));
 
-const pool = new pg.Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
-});
+const dbConfig = {
+    connectionString: process.env.DATABASE_URL
+};
 
+if (process.env.NODE_ENV === "production") {
+    dbConfig.ssl = {
+        rejectUnauthorized: false
+    };
+}
+
+const pool = new pg.Pool(dbConfig);
+
+const unknownHTTP = (req, res, next) => {
+    res.sendStatus(404);
+    next();
+};
 
 app.get("/todo", (req, res, next) => {
     pool.query('SELECT * FROM tasks').then((data) => {
@@ -81,7 +90,7 @@ app.delete("/todo", (req, res, next) => {
         .catch(next);
 })
 
-
+app.use(unknownHTTP);
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
