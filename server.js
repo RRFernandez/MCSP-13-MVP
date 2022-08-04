@@ -35,38 +35,6 @@ app.get("/todo", (req, res, next) => {
         .catch(next)
 });
 
-// app.get("/todo/tasks", (req, res, next) => {
-//     pool.query('SELECT * FROM tasks').then((data) => {
-//             console.log(data);
-//             res.send(data.rows);
-//         })
-//         .catch(next)
-// });
-
-// app.get("/todo/:id", (req, res, next) => {
-//     pool.query('SELECT * FROM lists WHERE list_id = $1', [id]).then((data) => {
-//             if (data.rows[0]) {
-//                 res.send(data.rows[0]);
-//             } else {
-//                 res.sendStatus(404);
-//             }
-//         })
-//         .catch(next)
-// });
-
-
-// app.get("/todo/tasks/:id", (req, res, next) => {
-//     const id = req.params.id;
-//     pool.query('SELECT * FROM tasks WHERE list_id = $1', [id]).then((data) => {
-//             if (data.rows[0]) {
-//                 res.send(data.rows[0]);
-//             } else {
-//                 res.sendStatus(404);
-//             }
-//         })
-//         .catch(next)
-// });
-
 app.post("/todo", (req, res, next) => {
     const { name, list_id } = req.body;
     pool.query('INSERT INTO tasks (name, list_id) VALUES ($1, $2) RETURNING *;', [name, list_id])
@@ -76,8 +44,8 @@ app.post("/todo", (req, res, next) => {
         .catch(next)
 })
 
-app.delete("/todo", (req, res, next) => {
-    const { name } = req.body;
+app.delete("/todo/:name", (req, res, next) => {
+    const { name } = req.params;
     pool.query('DELETE FROM tasks WHERE name = $1 RETURNING *;', [name])
         .then((data) => {
             console.log(data.rows[0])

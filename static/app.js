@@ -9,20 +9,28 @@ const $filterOption = $(".filter-todo")
 
 const createTodo = (data) => {
     for (let i = 0; i < data.length; i++) {
+        //todo div
         const $todoDiv = $('<div></div>').addClass("todo-div");
+        //todo task
         const $newTask = $('<li></li>').addClass("task");
+        $newTask.append(data[i].name)
         $todoDiv.append($newTask);
+        //complete button on task
         const $completeBtn = $('<button></button>').html('<i class="fas fa-check"></i>');
         $completeBtn.addClass("complete-btn")
         $todoDiv.append($completeBtn);
+        //trash button on task
         const $trashBtn = $('<button></button>').html('<i class="fas fa-trash"></i>');
         $trashBtn.addClass("trash-btn")
         $todoDiv.append($trashBtn);
-        $todoDiv.append(JSON.stringify(data[i].name))
+        //append it to the list body
         $todoList.append($todoDiv);
+        // $todoDiv.append(data[i].name)
+        //clears input field
         $todoInput.val("");
     }
 }
+
 
 const setTodo = (data) => {
     const $todoDiv = $('<div></div>').addClass("todo-div");
@@ -34,7 +42,7 @@ const setTodo = (data) => {
     const $trashBtn = $('<button></button>').html('<i class="fas fa-trash"></i>');
     $trashBtn.addClass("trash-btn")
     $todoDiv.append($trashBtn);
-    $todoDiv.append(JSON.stringify(data.name))
+    $todoDiv.append(data.name)
     $todoList.append($todoDiv);
     $todoInput.val("");
 }
@@ -63,40 +71,44 @@ const getTodo = (event) => {
     fetch("/todo")
         .then(res => res.json())
         .then(data => {
-            console.log(data)
+            // console.log(data)
             createTodo(data)
+                // $todoList.on('click', deleteCheck)
         })
 
 }
 
-function deleteIt() {
-    fetch("/todo", {
+
+$todoList.on('click', (e) => {
+
+    const item = e.target;
+    const checkItem = e.target
+    const name = item.innerHTML
+    console.log(name)
+
+    fetch(`/todo/${name}`, {
             method: 'DELETE'
         })
-        .then(() => {
-            console.log('Deleted')
+        .then(res => res.json())
+        .then((data) => {
+            // console.log(data)
         })
-}
 
-const deleteCheck = (e) => {
-    const item = e.target;
-
-
-    if (item.classList[0] === 'trash-btn') {
-        const todo = item.parentElement;
+    if (checkItem.classList[0] === 'trash-btn') {
+        const todo = checkItem.parentElement;
+        // console.log(todo)
         todo.classList.add('fall');
         todo.addEventListener('transitioned', () => {
             todo.remove();
-            deleteIt();
         })
 
     }
 
-    if (item.classList[0] === "complete-btn") {
-        const todo = item.parentElement;
+    if (checkItem.classList[0] === "complete-btn") {
+        const todo = checkItem.parentElement;
         todo.classList.toggle('completed');
     }
-}
+})
 
 function filterTodo(e) {
     const todos = $todoList.children();
@@ -125,7 +137,7 @@ function filterTodo(e) {
 
 //event listeners
 $todoBtn.on('click', addTodo)
-$todoList.on('click', deleteCheck)
+    // $todoList.on('click', deleteCheck)
 $filterOption.on('click', filterTodo)
 
 //called function
