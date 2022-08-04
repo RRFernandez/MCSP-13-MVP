@@ -62,9 +62,9 @@ const getTodo = (event) => {
 
     fetch("/todo")
         .then(res => res.json())
-        .then(data => {
+        .then($.parseJSON(data) => {
             console.log(data)
-            createTodo($.parseJSON(data))
+            createTodo(data)
         })
 
 }
